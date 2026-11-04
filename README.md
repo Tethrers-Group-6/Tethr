@@ -11,3 +11,52 @@ keeps every group's balances, bills, and events in one place so friends always k
 what's coming up. Unlike Splitwise, our product connects expense splitting with a shared group 
 calendar, so the money and the plans behind it stay together. 
 **Keeping friends connected by making shared money and shared plans effortless.**
+
+
+## Project Directory
+Tethr/
+├── MilestoneSubmissions/
+│   └── Team6_Tethr_Project_Proposal.pdf
+├── ProjectSourceCode/
+│   ├── .gitignore
+│   ├── docker-compose.yaml
+│   ├── index.js
+│   ├── src/
+│   │   ├── init_data/
+│   │   │   ├── create.sql
+│   │   │   └── insert.sql
+│   │   ├── resources/
+│   │   │   ├── css/
+│   │   │   │   └── styles.css
+│   │   │   └── img/
+│   │   ├── routes/
+│   │   │   ├── auth.js
+│   │   │   ├── balances.js
+│   │   │   ├── circleIndividual.js
+│   │   │   ├── circles.js
+│   │   │   ├── dashboard.js
+│   │   │   ├── events.js
+│   │   │   ├── expenses.js
+│   │   │   ├── profile.js
+│   │   │   └── register.js
+│   │   └── views/
+│   │       ├── layouts/
+│   │       │   └── main.hbs
+│   │       ├── pages/
+│   │       │   ├── auth.html
+│   │       │   ├── balances.html
+│   │       │   ├── circleIndividual.html
+│   │       │   ├── circles.html
+│   │       │   ├── dashboard.html
+│   │       │   ├── events.html
+│   │       │   ├── expenses.html
+│   │       │   ├── profile.html
+│   │       │   └── register.html
+│   │       └── partials/
+│   │           └── logout.hbs
+│   └── test/
+│       ├── auth.spec.js
+│       └── circles.spec.js
+├── README.md
+└── TeamMeetingLogs/
+    └── MeetingLog.md
