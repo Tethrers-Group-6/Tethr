@@ -14,13 +14,16 @@ calendar, so the money and the plans behind it stay together.
 
 
 ## Project Directory
+```
 Tethr/
 ├── MilestoneSubmissions/
+│   ├── Release_Notes.md
 │   └── Team6_Tethr_Project_Proposal.pdf
 ├── ProjectSourceCode/
 │   ├── .gitignore
 │   ├── docker-compose.yaml
 │   ├── index.js
+│   ├── package.json
 │   ├── src/
 │   │   ├── init_data/
 │   │   │   ├── create.sql
@@ -28,35 +31,30 @@ Tethr/
 │   │   ├── resources/
 │   │   │   ├── css/
 │   │   │   │   └── styles.css
-│   │   │   └── img/
 │   │   ├── routes/
-│   │   │   ├── auth.js
 │   │   │   ├── balances.js
 │   │   │   ├── circleIndividual.js
 │   │   │   ├── circles.js
 │   │   │   ├── dashboard.js
 │   │   │   ├── events.js
 │   │   │   ├── expenses.js
+│   │   │   ├── login.js
 │   │   │   ├── profile.js
 │   │   │   └── register.js
 │   │   └── views/
-│   │       ├── layouts/
-│   │       │   └── main.hbs
-│   │       ├── pages/
-│   │       │   ├── auth.html
-│   │       │   ├── balances.html
-│   │       │   ├── circleIndividual.html
-│   │       │   ├── circles.html
-│   │       │   ├── dashboard.html
-│   │       │   ├── events.html
-│   │       │   ├── expenses.html
-│   │       │   ├── profile.html
-│   │       │   └── register.html
-│   │       └── partials/
-│   │           └── logout.hbs
+│   │       ├── balances.html
+│   │       ├── circleIndividual.html
+│   │       ├── circles.html
+│   │       ├── dashboard.html
+│   │       ├── events.html
+│   │       ├── expenses.html
+│   │       ├── login.html
+│   │       ├── profile.html
+│   │       └── register.html
 │   └── test/
 │       ├── auth.spec.js
 │       └── circles.spec.js
 ├── README.md
 └── TeamMeetingLogs/
     └── MeetingLog.md
+```
