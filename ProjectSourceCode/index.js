@@ -1,1 +1,1 @@
-app.use(require('./src/routes/dashboard')(db));
+// app.use(require('./src/routes/dashboard')(db));
