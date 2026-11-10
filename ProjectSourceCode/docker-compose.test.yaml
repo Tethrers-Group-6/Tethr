@@ -1,0 +1,30 @@
+services:
+  db-test:
+    image: postgres:14
+    env_file: .env.test
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 2s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    volumes:
+      - tethr-test-db:/var/lib/postgresql/data
+      # Only the schema. No dev seed data: the tests create and remove their own rows.
+      - ./src/init_data/create.sql:/docker-entrypoint-initdb.d/create.sql:ro
+
+  tests:
+    image: node:lts
+    working_dir: /repository
+    env_file: .env.test
+    depends_on:
+      db-test:
+        condition: service_healthy
+    volumes:
+      - ./:/repository
+      - tethr-test-node-modules:/repository/node_modules
+    command: ['sh', '-c', 'npm install && npm test']
+
+volumes:
+  tethr-test-db:
+  tethr-test-node-modules:

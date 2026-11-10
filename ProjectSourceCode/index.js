@@ -27,11 +27,13 @@ app.use('/resources', express.static(path.join(__dirname, 'src/resources')));
 // Dashboard: serves /home and /api/dashboard
 app.use(require('./src/routes/dashboard')(db));
 
+// Circles: serves /circles and /api/circles
+app.use(require('./src/routes/circles')(db));
+
 // Temporary: each remaining page just serves its HTML file until its route file exists
 const pages = {
   '/balances': 'balances.html',
   '/circle': 'circleIndividual.html',
-  '/circles': 'circles.html',
   '/events': 'events.html',
   '/expenses': 'expenses.html',
   '/login': 'login.html',
