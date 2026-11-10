@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tethr | Calendar</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="../resources/css/events.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Tethr</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Circles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-4">
+
+        <!-- Calendar heading -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1>Calendar</h1>
+                <p class="text-muted">Manage events with your circles.</p>
+            </div>
+
+            <button class="btn btn-primary" id="newEventBtn">
+                + New Event
+            </button>
+        </div>
+
+        <!-- Calendar controls -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-outline-secondary" id="prevBtn">
+                    &lt;
+                </button>
+
+                <button class="btn btn-outline-secondary" id="todayBtn">
+                    Today
+                </button>
+
+                <button class="btn btn-outline-secondary" id="nextBtn">
+                    &gt;
+                </button>
+
+                <h4 id="calendarTitle" class="mb-0 ms-2"></h4>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center">
+
+                <!-- Circle filter -->
+                <select id="circleFilter" class="form-select">
+                    <option value="all">All Circles</option>
+                </select>
+
+                <!-- View selection -->
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="monthBtn">
+                        Month
+                    </button>
+
+                    <button class="btn btn-outline-primary" id="weekBtn">
+                        Week
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Calendar -->
+        <div class="card">
+            <div class="card-body">
+                <div id="calendar" class="calendar-grid"></div>
+            </div>
+        </div>
+
+        <div id="statusMessage" class="mt-3 text-muted" role="status"></div>
+
+    </main>
+
+    <!-- NEW EVENT MODAL -->
+    <div class="modal fade" id="newEventModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <form id="eventForm">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create New Event</h5>
+
+                        <button type="button" class="btn-close"
+                                data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="mb-3">
+                            <label for="eventTitle" class="form-label">
+                                Event Name
+                            </label>
+
+                            <input type="text" class="form-control"
+                                   id="eventTitle" required maxlength="120">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="eventCircle" class="form-label">
+                                Select Circle
+                            </label>
+
+                            <select class="form-select" id="eventCircle" required>
+                                <option value="">Choose a Circle</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="eventDate" class="form-label">
+                                Date
+                            </label>
+
+                            <input type="date" class="form-control"
+                                   id="eventDate" required>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="startTime" class="form-label">
+                                    Start Time
+                                </label>
+
+                                <input type="time" class="form-control"
+                                       id="startTime" required>
+                            </div>
+
+                            <div class="col">
+                                <label for="endTime" class="form-label">
+                                    End Time
+                                </label>
+
+                                <input type="time" class="form-control"
+                                       id="endTime" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="eventLocation" class="form-label">
+                                Location
+                            </label>
+
+                            <input type="text" class="form-control"
+                                   id="eventLocation">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="eventDescription" class="form-label">
+                                Description
+                            </label>
+
+                            <textarea class="form-control"
+                                      id="eventDescription"
+                                      rows="3"></textarea>
+                        </div>
+
+                        <div id="formError" class="text-danger"></div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+
+                        <button type="submit" class="btn btn-primary">
+                            Save Event
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- EVENT DETAILS MODAL -->
+    <div class="modal fade" id="eventDetailsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailTitle">
+                        Event Details
+                    </h5>
+
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body" id="eventDetailsBody"></div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // true = standalone testing, false = use backend API
+        window.TETHR_CALENDAR_CONFIG = {
+            demoMode: true,
+            apiBase: "/api/calendar"
+        };
+    </script>
+
+    <script src="../routes/events.js"></script>
+
+</body>
+</html>
