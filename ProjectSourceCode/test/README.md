@@ -104,3 +104,35 @@ tests-1 exited with code 0
 ## Not covered yet
 - /register and /login tests (another teammate's feature)
 - Circle balances (not implemented yet)
+
+---
+
+# Testing: Profile
+
+Runs with the same commands as above (all `test/*.spec.js` files run together).
+
+## Route contract
+| Route | Request | Success | Failure cases |
+|---|---|---|---|
+| GET /profile | logged in | 200, the profile page (HTML) | 302 redirect to /login when logged out |
+| GET /api/profile | logged in | 200, { profile: { id, displayName, email, venmoUsername, memberSince, circleCount } }. Never includes the password hash. | 401 { error: "Not logged in" }; 404 "Profile not found" (session points to a deleted account) |
+| PUT /api/profile | JSON { display_name, venmo_username } | 200, { message: "Profile updated", profile } and the users row is updated | 400 with a message naming the field (blank or 100+ character name; bad Venmo username); 401 not logged in; 404 no account |
+
+Field rules (src/validateProfileUpdate.js):
+- display_name: required, 1-100 characters after trimming (users.display_name is VARCHAR(100)).
+- venmo_username: optional. A blank value removes it (stored as NULL). One leading @ is dropped. Otherwise 5-30 letters, numbers, - or _.
+- email is the login, so it is not editable on this page.
+
+## What is tested
+- Unit (test/profileValidation.spec.js, 9 tests): validateProfileUpdate, no HTTP or database. The PUT route uses this same function before it touches the database.
+- Integration (test/profile.spec.js, 11 tests): HTTP -> Express router -> real PostgreSQL.
+  - GET: returns the right profile and circle count; never returns the password hash; 401 logged out; 404 deleted account.
+  - PUT: valid update is saved to the database; blank Venmo clears it; blank name, bad Venmo username and logged-out requests are rejected and the database row is unchanged.
+  - Page: logged-out visitors are redirected to /login; logged-in users get the HTML page.
+- Login is stubbed the same way as the Circles tests.
+
+## Cleanup and repeatability
+- Each run creates one user (and one circle for the circle count) with a random tag.
+- afterEach puts that user's name and Venmo username back, so every test starts from the same state.
+- after() deletes only that user and circle. No table is truncated.
+- The full suite (Circles + Profile, 36 tests) passed twice in a row, and the test database was empty afterward.
