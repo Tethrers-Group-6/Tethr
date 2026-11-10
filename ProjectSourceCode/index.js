@@ -30,6 +30,9 @@ app.use(require('./src/routes/dashboard')(db));
 // Circles: serves /circles and /api/circles
 app.use(require('./src/routes/circles')(db));
 
+// Profile: serves /profile and /api/profile
+app.use(require('./src/routes/profile')(db));
+
 // Temporary: each remaining page just serves its HTML file until its route file exists
 const pages = {
   '/balances': 'balances.html',
@@ -37,7 +40,6 @@ const pages = {
   '/events': 'events.html',
   '/expenses': 'expenses.html',
   '/login': 'login.html',
-  '/profile': 'profile.html',
   '/register': 'register.html'
 };
 Object.entries(pages).forEach(([url, file]) => {
