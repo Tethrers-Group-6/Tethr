@@ -185,72 +185,150 @@ on the real app. Real login is not covered here.
 Run locally on PostgreSQL 16 with `npm test` (not in Docker). Replace with your Docker output from the commands above.
  
 ```
-  Calendar API integration (Express + PostgreSQL)
-    authentication
-      rejects an anonymous request and creates nothing
-    GET /api/events/circles
-      returns only the caller’s groups
-    POST /api/events
-      creates one event, RSVPs the creator and syncs it to Google
-      rejects invalid input with 400 and saves nothing
-      returns 403 for a group the user is not in and saves nothing
-      still saves the event, unsynced, when Google fails
-       works when Google is not configured
-    GET /api/events
-       returns the group’s events in date order with RSVPs, the caller’s status and expenses
-       never shows events from groups the caller is not in
-       returns an empty list outside the requested range
-       rejects a bad range with 400
-    POST /api/events/:id/rsvp
-       saves a status and updates it in place (one row per person)
-       returns 404 for a non-member and saves nothing
-       returns 400 for an unknown status or a bad id and saves nothing
-    GET /events page
-       redirects a signed-out visitor to /login
-       renders the calendar page for a signed-in user
- 
-  Calendar wiring in the real app
-     GET /api/events/circles is called by events.js and mounted behind login
-     GET /api/events is called by events.js and mounted behind login
-     POST /api/events is called by events.js and mounted behind login
-     POST /api/events/1/rsvp is called by events.js and mounted behind login
-     redirects /events to /login when signed out
-     serves every /resources file that events.html links to
- 
-  Calendar login check (session)
-     finds the user id in the common session shapes
-     treats a missing or empty session as signed out
- 
-  Calendar validation (unit)
-    validateEvent
-       accepts a complete event and returns clean values
-       rejects a missing title
-       rejects an end time that is not after the start time
-       rejects impossible dates and malformed times
-       rejects group ids that are not positive whole numbers
-       enforces length limits and handles a missing body
-       reports every problem at once
-    validateRange
-       accepts a normal month-sized range
-       rejects missing, malformed, reversed and oversized ranges
-    validateRsvp
-       accepts going, maybe and no with a numeric id
-       rejects unknown statuses and bad ids
-    helpers
-       isRealDate understands leap years
-       toId only accepts positive whole numbers
- 
-  Events: database rules (PostgreSQL)
-     rejects an event that ends before, or exactly when, it starts
-     accepts an event with no end time, and the store reports its end as null
-     keeps Google ids unique but allows any number of unsynced events
-     allows only going, maybe or no, and one RSVP per person per event
-     deletes an event’s RSVPs with the event
-     keeps expenses when their event is deleted, and clears the link
-     deletes a group’s events, RSVPs and expenses when the group is deleted
- 
-  Welcome route
-     returns the default welcome message
+db-test-1  | The files belonging to this database system will be owned by user "postgres".
+db-test-1  | This user must also own the server process.
+db-test-1  | 
+db-test-1  | The database cluster will be initialized with locale "en_US.utf8".
+db-test-1  | The default database encoding has accordingly been set to "UTF8".
+db-test-1  | The default text search configuration will be set to "english".
+db-test-1  | 
+db-test-1  | Data page checksums are disabled.
+db-test-1  | 
+db-test-1  | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+db-test-1  | creating subdirectories ... ok
+db-test-1  | selecting dynamic shared memory implementation ... posix
+db-test-1  | selecting default max_connections ... 100
+db-test-1  | selecting default shared_buffers ... 128MB
+db-test-1  | selecting default time zone ... Etc/UTC
+db-test-1  | creating configuration files ... ok
+db-test-1  | running bootstrap script ... ok
+db-test-1  | performing post-bootstrap initialization ... ok
+db-test-1  | syncing data to disk ... ok
+db-test-1  | 
+db-test-1  | 
+db-test-1  | Success. You can now start the database server using:
+db-test-1  | 
+db-test-1  |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+db-test-1  | 
+db-test-1  | initdb: warning: enabling "trust" authentication for local connections
+db-test-1  | You can change this by editing pg_hba.conf or using the option -A, or
+db-test-1  | --auth-local and --auth-host, the next time you run initdb.
+db-test-1  | waiting for server to start....2026-11-11 07:21:19.749 UTC [48] LOG:  starting PostgreSQL 14.24 (Debian 14.24-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+db-test-1  | 2026-11-11 07:21:19.752 UTC [48] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-test-1  | 2026-11-11 07:21:19.775 UTC [49] LOG:  database system was shut down at 2026-11-11 07:21:19 UTC
+db-test-1  | 2026-11-11 07:21:19.817 UTC [48] LOG:  database system is ready to accept connections
+db-test-1  |  done
+db-test-1  | server started
+db-test-1  | CREATE DATABASE
+db-test-1  | 
+db-test-1  | 
+db-test-1  | /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/create.sql
+db-test-1  | psql:/docker-entrypoint-initdb.d/create.sql:1: NOTICE:  table "event_rsvps" does not exist, skipping
+db-test-1  | DROP TABLE
+db-test-1  | psql:/docker-entrypoint-initdb.d/create.sql:2: NOTICE:  table "payments" does not exist, skipping
+db-test-1  | DROP TABLE
+db-test-1  | DROP TABLE
+db-test-1  | psql:/docker-entrypoint-initdb.d/create.sql:3: NOTICE:  table "expense_splits" does not exist, skipping
+db-test-1  | DROP TABLE
+db-test-1  | psql:/docker-entrypoint-initdb.d/create.sql:4: NOTICE:  table "expenses" does not exist, skipping
+db-test-1  | psql:/docker-entrypoint-initdb.d/create.sql:5: NOTICE:  table "recurring_bills" does not exist, skipping
+db-test-1  | DROP TABLE
+db-test-1  | psql:/docker-entrypoint-initdb.d/create.sql:6: NOTICE:  table "events" does not exist, skipping
+db-test-1  | DROP TABLE
+db-test-1  | psql:/docker-entrypoint-initdb.d/create.sql:7: NOTICE:  table "circle_members" does not exist, skipping
+db-test-1  | DROP TABLE
+db-test-1  | psql:/docker-entrypoint-initdb.d/create.sql:8: NOTICE:  table "circles" does not exist, skipping
+db-test-1  | DROP TABLE
+db-test-1  | DROP TABLE
+db-test-1  | psql:/docker-entrypoint-initdb.d/create.sql:9: NOTICE:  table "users" does not exist, skipping
+db-test-1  | CREATE TABLE
+db-test-1  | CREATE TABLE
+db-test-1  | CREATE TABLE
+db-test-1  | CREATE TABLE
+db-test-1  | CREATE TABLE
+db-test-1  | CREATE TABLE
+db-test-1  | CREATE TABLE
+db-test-1  | CREATE TABLE
+db-test-1  | CREATE TABLE
+db-test-1  | 
+db-test-1  | 
+db-test-1  | waiting for server to shut down...2026-11-11 07:21:20.500 UTC [48] LOG:  received fast shutdown request
+db-test-1  | .2026-11-11 07:21:20.503 UTC [48] LOG:  aborting any active transactions
+db-test-1  | 2026-11-11 07:21:20.507 UTC [48] LOG:  background worker "logical replication launcher" (PID 55) exited with exit code 1
+db-test-1  | 2026-11-11 07:21:20.507 UTC [50] LOG:  shutting down
+db-test-1  | 2026-11-11 07:21:20.595 UTC [48] LOG:  database system is shut down
+db-test-1  |  done
+db-test-1  | server stopped
+db-test-1  | 
+db-test-1  | PostgreSQL init process complete; ready for start up.
+db-test-1  | 
+db-test-1  | 2026-11-11 07:21:20.645 UTC [1] LOG:  starting PostgreSQL 14.24 (Debian 14.24-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+db-test-1  | 2026-11-11 07:21:20.648 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+db-test-1  | 2026-11-11 07:21:20.649 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+db-test-1  | 2026-11-11 07:21:20.655 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-test-1  | 2026-11-11 07:21:20.665 UTC [65] LOG:  database system was shut down at 2026-11-11 07:21:20 UTC
+db-test-1  | 2026-11-11 07:21:20.701 UTC [1] LOG:  database system is ready to accept connections
+Container tethr-tests-db-test-1 Healthy 
+tests-1    | npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+tests-1    | npm warn deprecated glob@8.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+tests-1    | npm warn deprecated superagent@8.1.2: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
+tests-1    | npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+tests-1    | 
+tests-1    | added 491 packages, and audited 492 packages in 11s
+tests-1    | 
+tests-1    | 86 packages are looking for funding
+tests-1    |   run `npm fund` for details
+tests-1    | 
+tests-1    | 22 vulnerabilities (1 low, 20 moderate, 1 high)
+tests-1    | 
+tests-1    | To address all issues (including breaking changes), run:
+tests-1    |   npm audit fix --force
+tests-1    | 
+tests-1    | Run `npm audit` for details.
+tests-1    | npm warn install-scripts 1 package has install scripts not yet covered by allowScripts:
+tests-1    | npm warn install-scripts   @parcel/watcher@2.6.0 (install: node scripts/build-from-source.js)
+tests-1    | npm warn install-scripts
+tests-1    | npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+tests-1    | npm notice
+tests-1    | npm notice New major version of npm available! 11.19.0 -> 12.2.2
+tests-1    | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+tests-1    | npm notice To update run: npm install -g npm@12.2.2
+tests-1    | npm notice
+tests-1    | 
+tests-1    | > tethr@1.0.0 test
+tests-1    | > mocha --exit
+tests-1    | 
+tests-1    | 
+tests-1    |  Exception during run: Error: Cannot find module './helpers/testDb'
+tests-1    | Require stack:
+tests-1    | - /repository/test/events.spec.js
+tests-1    |     at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)
+tests-1    |     at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+tests-1    |     at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+tests-1    |     at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1169:12)
+tests-1    |     at Module._load (node:internal/modules/cjs/loader:1341:5)
+tests-1    |     at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+tests-1    |     at Module.require (node:internal/modules/cjs/loader:1674:12)
+tests-1    |     at require (node:internal/modules/helpers:157:16)
+tests-1    |     at Object.<anonymous> (/repository/test/events.spec.js:3:34)
+tests-1    |     at Module._compile (node:internal/modules/cjs/loader:1929:14)
+tests-1    |     at Object..js (node:internal/modules/cjs/loader:2060:10)
+tests-1    |     at Module.load (node:internal/modules/cjs/loader:1651:32)
+tests-1    |     at Module._load (node:internal/modules/cjs/loader:1443:12)
+tests-1    |     at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)
+tests-1    |     at loadCJSModuleWithModuleLoad (node:internal/modules/esm/translators:372:15)
+tests-1    |     at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:244:9)
+tests-1    |     at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+tests-1    |     at async node:internal/modules/esm/loader:647:26
+tests-1    |     at async formattedImport (/repository/node_modules/mocha/lib/nodejs/esm-utils.js:9:14)
+tests-1    |     at async exports.requireOrImport (/repository/node_modules/mocha/lib/nodejs/esm-utils.js:42:28)
+tests-1    |     at async exports.loadFilesAsync (/repository/node_modules/mocha/lib/nodejs/esm-utils.js:100:20)
+tests-1    |     at async singleRun (/repository/node_modules/mocha/lib/cli/run-helpers.js:162:3)
+tests-1    |     at async exports.handler (/repository/node_modules/mocha/lib/cli/run.js:375:5) {
+tests-1    |   code: 'MODULE_NOT_FOUND',
+tests-1    |   requireStack: [ '/repository/test/events.spec.js' ]
+tests-1    | }
+tests-1 exited with code 1
 ```
  
 ## Not covered yet
