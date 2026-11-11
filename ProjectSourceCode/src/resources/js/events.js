@@ -79,7 +79,7 @@
       (rows ? '<ul class="expenses">' + rows + '</ul>' : '<p class="empty">No expenses yet.</p>') +
       (rows ? '<div class="estimate"><span>Est. per person:</span><span>' + C.money(C.estPerPerson(e.expenses, people)) + '</span></div>' : '<div class="estimate"></div>') +
       '<div class="stack">' +
-        '<a class="btn block" href="/expenses/new?event=' + e.id + '">+ Add Expense to Event</a>' +
+        '<a class="btn block" href="/expenses?event=' + e.id + '">+ Add Expense to Event</a>' +
         '<a class="btn btn-blue block" href="' + esc(C.googleCalendarUrl(e, TIME_ZONE)) + '" target="_blank" rel="noopener noreferrer"' +
           ' aria-label="Add to Google Calendar (opens in a new tab)">Add to Google Calendar</a>' +
         '<button type="button" class="btn block" data-ics="1">Download .ics (Apple, Outlook)</button>' +
@@ -98,7 +98,7 @@
   function load() {
     const range = C.rangeFor(state.view, state.anchor), token = ++loadToken;
     statusEl.textContent = 'Loading events\u2026';
-    return api('/api/calendar/events?from=' + range.from + '&to=' + range.to)
+    return api('/api/events?from=' + range.from + '&to=' + range.to)
       .then((data) => { if (token === loadToken) { state.events = data; statusEl.textContent = ''; } })
       .catch((err) => {
         if (token !== loadToken) return;
@@ -109,7 +109,7 @@
   }
 
   function loadCircles() {
-    return api('/api/calendar/circles').then((rows) => {
+    return api('/api/events/circles').then((rows) => {
       state.circles = rows;
       const opts = rows.map((c) => '<option value="' + c.id + '">' + esc(c.name) + '</option>').join('');
       filter.innerHTML = '<option value="">All groups</option>' + opts;
@@ -153,7 +153,7 @@
     const before = e.rsvp;
     e.rsvp = C.adjustRsvp(before, prev, next); e.myStatus = next;
     renderDetail();
-    api('/api/calendar/events/' + e.id + '/rsvp', { method: 'POST', body: { status: next } })
+    api('/api/events/' + e.id + '/rsvp', { method: 'POST', body: { status: next } })
       .catch(() => {
         e.rsvp = before; e.myStatus = prev; renderDetail();
         statusEl.textContent = 'Your RSVP did not save. Try again.';
@@ -178,7 +178,7 @@
     ev.preventDefault();
     formError.textContent = '';
     submitBtn.disabled = true;
-    api('/api/calendar/events', {
+    api('/api/events', {
       method: 'POST',
       body: {
         circleId: Number(circleSelect.value), title: $('f-title').value, date: $('f-date').value,

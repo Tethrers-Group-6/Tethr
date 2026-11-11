@@ -1,9 +1,10 @@
-// Calendar router. Everything it needs is passed in, so it can be mounted
-// (or tested) without any other part of the app:
-//   app.use(createEventsRouter({ db, gcal, getUserId, viewsDir }))
+// Calendar router, mounted in index.js as:  app.use(require('./src/routes/events')(db));
+// Tests can pass options to replace what the app normally supplies:
+//   require('./src/routes/events')(db, { gcal, getUserId, viewsDir })
 const express = require('express');
 const path = require('path');
 const {createStore} = require('../services/calendarStore');
+const {fromEnv} = require('../services/gcal');
 const {validateEvent, validateRange, validateRsvp} = require('../validateEvent');
 
 // ---- middleware: validate, then hand clean input to the handler ----
@@ -28,6 +29,16 @@ function checkRsvp(req, res, next) {
   next();
 }
 
+// Finds the logged-in user's id in the session. Handles the common shapes; if your login
+// stores it somewhere else, change it here (it is the only place the calendar reads it).
+function sessionUserId(req) {
+  const s = req.session;
+  if (!s) return null;
+  const u = s.user || {};
+  const id = Number(u.user_id || u.id || u.userId || s.user_id || s.userId);
+  return Number.isInteger(id) && id > 0 ? id : null;
+}
+
 function createEventsRouter({db, gcal = null, getUserId, viewsDir} = {}) {
   if (!db) throw new Error('createEventsRouter: db is required');
   if (typeof getUserId !== 'function') throw new Error('createEventsRouter: getUserId is required');
@@ -42,17 +53,17 @@ function createEventsRouter({db, gcal = null, getUserId, viewsDir} = {}) {
   };
   const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
-  router.use('/api/calendar', express.json(), requireUser);
+  router.use('/api/events', express.json(), requireUser);
 
-  router.get('/api/calendar/circles', wrap(async (req, res) => {
+  router.get('/api/events/circles', wrap(async (req, res) => {
     res.json(await data.listCircles(req.userId));
   }));
 
-  router.get('/api/calendar/events', checkRange, wrap(async (req, res) => {
+  router.get('/api/events', checkRange, wrap(async (req, res) => {
     res.json(await data.listEvents(req.userId, req.range.from, req.range.to));
   }));
 
-  router.post('/api/calendar/events', checkEventBody, wrap(async (req, res) => {
+  router.post('/api/events', checkEventBody, wrap(async (req, res) => {
     const input = req.eventInput;
     if (!(await data.isMember(req.userId, input.circleId))) {
       return res.status(403).json({error: 'You are not a member of that group.'});
@@ -74,7 +85,7 @@ function createEventsRouter({db, gcal = null, getUserId, viewsDir} = {}) {
     res.status(201).json(event);
   }));
 
-  router.post('/api/calendar/events/:id/rsvp', checkRsvp, wrap(async (req, res) => {
+  router.post('/api/events/:id/rsvp', checkRsvp, wrap(async (req, res) => {
     const {eventId, status} = req.rsvpInput;
     const row = await data.setRsvp(req.userId, eventId, status);
     if (!row) return res.status(404).json({error: 'Event not found.'});
@@ -96,5 +107,13 @@ function createEventsRouter({db, gcal = null, getUserId, viewsDir} = {}) {
   return router;
 }
 
-module.exports = createEventsRouter;
+// What index.js calls: (db). Defaults: Google sync from the environment (off when not configured),
+// the logged-in user from the session, and the views folder next to this one.
+module.exports = (db, options = {}) => createEventsRouter({
+  db,
+  gcal: 'gcal' in options ? options.gcal : fromEnv(),
+  getUserId: options.getUserId || sessionUserId,
+  viewsDir: options.viewsDir || path.join(__dirname, '../views'),
+});
+module.exports.sessionUserId = sessionUserId;
 module.exports.middleware = {checkRange, checkEventBody, checkRsvp};

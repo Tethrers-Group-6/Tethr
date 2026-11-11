@@ -1,5 +1,5 @@
 // All SQL for the calendar. `db` is a pg-promise style object (any/one/oneOrNone/none),
-// so tests can pass a fake and nothing else in the project is required.
+// so tests can pass a fake
 
 const EVENT_SELECT = `
   SELECT e.event_id AS id, e.circle_id AS "circleId", c.name AS circle, e.title, e.location,
