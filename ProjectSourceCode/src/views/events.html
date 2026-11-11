@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calendar | Tethr</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../resources/css/events.css">
+</head>
+<body>
+  <main class="page">
+    <div class="toolbar">
+      <div class="range-nav">
+        <button type="button" id="prev" class="chev" aria-label="Previous">&lsaquo;</button>
+        <h1 id="range-label"></h1>
+        <button type="button" id="next" class="chev" aria-label="Next">&rsaquo;</button>
+        <button type="button" id="today" class="btn btn-ghost">Today</button>
+      </div>
+      <div class="segmented" role="group" aria-label="Calendar view">
+        <button type="button" data-view="month" aria-pressed="true">Month</button>
+        <button type="button" data-view="week" aria-pressed="false">Week</button>
+      </div>
+      <label class="sr-only" for="circle-filter">Filter by group</label>
+      <select id="circle-filter" class="pill-select">
+        <option value="">All groups</option>
+      </select>
+      <button type="button" id="new-event" class="btn btn-green new-event">+ New Event</button>
+    </div>
+
+    <p id="status" class="status" role="status"></p>
+
+    <div class="layout">
+      <section class="calendar" aria-label="Calendar">
+        <div id="calendar"></div>
+      </section>
+      <aside id="detail" class="detail" aria-label="Event details" aria-live="polite"></aside>
+    </div>
+  </main>
+
+  <dialog id="event-dialog" aria-labelledby="dialog-title">
+    <form id="event-form" novalidate>
+      <h2 id="dialog-title">New event</h2>
+      <div class="field">
+        <label for="f-circle">Group</label>
+        <select id="f-circle" required></select>
+      </div>
+      <div class="field">
+        <label for="f-title">Event name</label>
+        <input id="f-title" type="text" maxlength="150" required>
+      </div>
+      <div class="field">
+        <label for="f-date">Date</label>
+        <input id="f-date" type="date" required>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="f-start">Start</label>
+          <input id="f-start" type="time" value="18:00" required>
+        </div>
+        <div class="field">
+          <label for="f-end">End</label>
+          <input id="f-end" type="time" value="19:00" required>
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-location">Location (optional)</label>
+        <input id="f-location" type="text" maxlength="200">
+      </div>
+      <p id="form-error" class="form-error" role="alert"></p>
+      <div class="actions">
+        <button type="button" id="cancel" class="btn btn-ghost">Cancel</button>
+        <button type="submit" id="submit" class="btn btn-green">Create event</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="../resources/js/calendar-core.js"></script>
+  <script src="../resources/js/events.js"></script>
+</body>
+</html>

@@ -20,20 +20,32 @@ Tethr/
 │   ├── Release_Notes.md
 │   └── Team6_Tethr_Project_Proposal.pdf
 ├── ProjectSourceCode/
+│   ├── .env.test.example
 │   ├── .gitignore
 │   ├── docker-compose.yaml
+│   ├── docker-compose.test.yaml
 │   ├── index.js
 │   ├── package.json
+│   ├── package-lock.json
 │   ├── src/
 │   │   ├── init_data/
 │   │   │   ├── create.sql
 │   │   │   └── insert.sql
 │   │   ├── resources/
 │   │   │   ├── css/
+│   │   │   │   ├── events.css
 │   │   │   │   └── styles.css
+│   │   │   ├── img/
+│   │   │   │   └── Tethr Logo.png
+│   │   │   └── js/
+│   │   │       ├── calendar-core.js
+│   │   │       ├── circles.js
+│   │   │       ├── dashboard.js
+│   │   │       ├── events.js
+│   │   │       ├── profile.js
+│   │   │       └── ...
 │   │   ├── routes/
 │   │   │   ├── balances.js
-│   │   │   ├── circleIndividual.js
 │   │   │   ├── circles.js
 │   │   │   ├── dashboard.js
 │   │   │   ├── events.js
@@ -41,19 +53,31 @@ Tethr/
 │   │   │   ├── login.js
 │   │   │   ├── profile.js
 │   │   │   └── register.js
-│   │   └── views/
-│   │       ├── balances.html
-│   │       ├── circleIndividual.html
-│   │       ├── circles.html
-│   │       ├── dashboard.html
-│   │       ├── events.html
-│   │       ├── expenses.html
-│   │       ├── login.html
-│   │       ├── profile.html
-│   │       └── register.html
+│   │   ├── services/
+│   │   │   ├── calendarStore.js
+│   │   │   └── gcal.js
+│   │   ├── views/
+│   │   │   ├── balances.html
+│   │   │   ├── circles.html
+│   │   │   ├── dashboard.html
+│   │   │   ├── events.html
+│   │   │   ├── expenses.html
+│   │   │   ├── login.html
+│   │   │   ├── profile.html
+│   │   │   └── register.html
+│   │   ├── validateEvent.js
+│   │   ├── validateInviteCode.js
+│   │   └── validateProfileUpdate.js
 │   └── test/
-│       ├── auth.spec.js
-│       └── circles.spec.js
+│       ├── README.md
+│       ├── circles.spec.js
+│       ├── events.spec.js
+│       ├── login.spec.js
+│       ├── profile.spec.js
+│       ├── profileValidation.spec.js
+│       ├── server.spec.js
+│       ├── validation.spec.js
+│       └── ...
 ├── README.md
 └── TeamMeetingLogs/
     └── MeetingLog.md
