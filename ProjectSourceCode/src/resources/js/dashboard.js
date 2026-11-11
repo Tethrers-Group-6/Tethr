@@ -132,7 +132,7 @@ function renderTotals(totals) {
     const netEl = document.getElementById('total-net');
     const netText = document.getElementById('total-net-text');
     netEl.textContent = formatMoney(net);
-    net.classList.remove('pos', 'neg');
+    netEl.classList.remove('pos', 'neg');
 
     if (net > 0) {
         netEl.classList.add('pos');
@@ -166,7 +166,7 @@ function renderRecent(transactions) {
             el('small', 'd-block text-body-secondary', (t.detail ? t.detail + ' \u00b7 ' : '') + formatShortDate(t.date))
         );
 
-        const right = el('strong', 'text-nonwrap ' + (t.amountCents >= 0 ? 'pos' : 'neg'), formatSigned(t.amountCents));
+        const right = el('strong', 'text-nowrap ' + (t.amountCents >= 0 ? 'pos' : 'neg'), formatSigned(t.amountCents));
         right.setAttribute('aria-label', (t.amountCents >= 0 ? 'Plus ' : 'Minus ') + formatMoney(t.amountCents));
 
         li.append(left, right);
@@ -222,10 +222,14 @@ function renderCircles(circles) {
     if (items.length === 0) {
         const li = el('div', 'col-12');
         const card = el('article', 'border rounded p-3');
-        const create = el('a', 'btn btn-primary btn-sm me-2', ' + New Circle');
-        create.href = '/circles/new';
-        const join = el('a', 'btn btn-outline-primary btn-sm', 'Join with Code');
-        join.href = '/circles/join';
+        const create = el('button', 'btn btn-primary btn-sm me-2', '+ New Circle');
+        create.type = 'button';
+        create.setAttribute('data-bs-toggle', 'modal');
+        create.setAttribute('data-bs-target', '#newCircleModal');
+        const join = el('button', 'btn btn-outline-primary btn-sm', 'Join with Code');
+        join.type = 'button';
+        join.setAttribute('data-bs-toggle', 'modal');
+        join.setAttribute('data-bs-target', '#joinCircleModal');
         const actions = el('p', 'mb-0');
         actions.append(create, join);
         card.append(el('p', 'text-body-secondary fst-italic', 'You are not in any circles yet.'), actions);
@@ -296,6 +300,117 @@ async function loadDashboard() {
         console.warn('Dashboard fetch failed, using sample data.');
         render(SAMPLE_DATA, true);
     }
+}
+
+
+function showNotice(message) {
+    const notice = document.getElementById('notice');
+    notice.textContent = message;
+    notice.hidden = false;
+}
+
+
+// Forms
+
+async function postJSON(url, body) {
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(body)
+    });
+
+    let data = {};
+    try {
+        data = await res.json();
+    } catch (e) {
+        // response had no JSON body
+    }
+
+    return { ok: res.ok, status: res.status, data: data };
+}
+
+
+function closeModal(id) {
+    const modal = bootstrap.Modal.getInstance(document.getElementById(id));
+    if (modal) {
+        modal.hide();
+    }
+}
+
+
+function showFormError(id, message) {
+    const box = document.getElementById(id);
+    box.textContent = message;
+    box.hidden = false;
+}
+
+
+// Shared by both forms: run the POST, then either show the error or finish
+async function submitForm(event, { url, body, errorId, inputId, modalId, successMessage }) {
+    event.preventDefault();
+    document.getElementById(errorId).hidden = true;
+
+    try {
+        const result = await postJSON(url, body());
+
+        if (result.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+
+        if (!result.ok) {
+            showFormError(errorId, result.data.error || 'Something went wrong. Please try again.');
+            return;
+        }
+
+        document.getElementById(inputId).value = '';
+        closeModal(modalId);
+        await loadDashboard();
+        showNotice(successMessage(result.data));
+
+    } catch (err) {
+        showFormError(errorId, 'Could not reach the server. Please try again.');
+    }
+}
+
+
+function handleJoin(event) {
+    return submitForm(event, {
+        url: '/api/circles/join',
+        body: () => ({ invite_code: document.getElementById('invite-code').value }),
+        errorId: 'join-error',
+        inputId: 'invite-code',
+        modalId: 'joinCircleModal',
+        successMessage: data => 'Joined ' + data.circle.name + '!'
+    });
+}
+
+
+function handleCreate(event) {
+    return submitForm(event, {
+        url: '/api/circles',
+        body: () => ({ name: document.getElementById('circle-name').value }),
+        errorId: 'new-error',
+        inputId: 'circle-name',
+        modalId: 'newCircleModal',
+        successMessage: data => 'Created ' + data.circle.name + '. Invite code: ' + data.circle.inviteCode
+    });
+}
+
+
+function init() {
+    document.getElementById('join-circle-form').addEventListener('submit', handleJoin);
+    document.getElementById('new-circle-form').addEventListener('submit', handleCreate);
+ 
+    // Clear any old error whenever a modal is opened again
+    document.getElementById('joinCircleModal').addEventListener('show.bs.modal', () => {
+        document.getElementById('join-error').hidden = true;
+    });
+    document.getElementById('newCircleModal').addEventListener('show.bs.modal', () => {
+        document.getElementById('new-error').hidden = true;
+    });
+ 
+    loadDashboard();
 }
 
 
