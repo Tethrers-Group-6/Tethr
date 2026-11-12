@@ -4,9 +4,14 @@
 - Feature 1: Join a circle with an invite code (Dylan). As a user, I can join my friends' circle using a code they send me.
 - Feature 2: Edit my profile (Pearl). As a user, I can change my display name and add my Venmo username so friends know who I am and how to pay me.
 - Feature 3: The group calendar (name). As a user, I can see my groups' events in a month or week view, create an event for one of my groups, say whether I'm going, and add the event to my own calendar. 
-- Feature 4: (teammate fills in)
+- Feature 4: Register As a user, I can create a profile that saves my transactions, circles, and credentials.
 
 ## 2. Acceptance criteria
+
+Register and log in:
+- Submitting a complete, valid form creates the account, and I can then sign in with those details.
+- Missing or invalid fields, or an email that is already registered, show a clear message naming the problem and no account is created.
+- Signing in with a wrong password shows "Incorrect email or password" and does not let me in.
 Join a circle:
 - A valid code adds the circle to my list and confirms with a message naming it.
 - A code that matches no circle shows a clear error and changes nothing.
