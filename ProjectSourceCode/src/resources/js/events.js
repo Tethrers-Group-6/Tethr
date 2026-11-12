@@ -196,3 +196,28 @@
 
   loadCircles().then(load);
 })();
+
+const SAMPLE_DATA = [
+  {
+    id: 1,
+    circleId: 1,
+    title: 'Sample Event',
+    date: '2024-06-01',
+    startTime: '10:00',
+    endTime: '12:00',
+    location: 'Sample Location',
+    myStatus: 'maybe',
+    rsvp: { going: 0, maybe: 1, no: 0 }
+  }, 
+  {
+    id: 2,
+    circleId: 1,
+    title: 'Sample Event',
+    date: '2024-06-01',
+    startTime: '10:00',
+    endTime: '12:00',
+    location: 'Sample Location',
+    myStatus: 'going',
+    rsvp: { going: 1, maybe: 0, no: 0 }
+  }
+]
