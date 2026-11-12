@@ -47,6 +47,10 @@ app.use(require('./src/routes/profile')(db));
 // Events: serves /events and /api/events
 app.use(require('./src/routes/events')(db));
 
+// Auth: serves POST /register and POST /login
+app.use(require('./src/routes/register')(db));
+app.use(require('./src/routes/login')(db));
+
 // Temporary: each remaining page just serves its HTML file until its route file exists
 const pages = {
   '/balances': 'balances.html',
