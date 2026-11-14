@@ -13,4 +13,9 @@
 ### 11-5 Meeting: Lab 10
 - Each member assigned to finish a component of Tethr end-to-end 
 - Progress needed to complete lab 10's testing by 11-10
-  
+### 11-10 Meeting: Scrum Meeting
+- Went over the requirements of Lab 10, what was done and what needed to be done
+- Progress check for everyone and who was doing what
+### 11-12 Meeting: Lab 11
+- Demoed the working pages with sample data
+- Want to have actual data soon to make sure database connection works
