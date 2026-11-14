@@ -54,7 +54,6 @@ app.use(require('./src/routes/login')(db));
 // Temporary: each remaining page just serves its HTML file until its route file exists
 const pages = {
   '/balances': 'balances.html',
-  '/circle': 'circleIndividual.html',
   '/expenses': 'expenses.html',
   '/login': 'login.html',
   '/register': 'register.html'
