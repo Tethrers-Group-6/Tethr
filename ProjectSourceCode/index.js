@@ -57,6 +57,11 @@ app.use(require('./src/routes/expenses')(db));
 // Circle detail: serves GET /api/circles/:id
 app.use(require('./src/routes/circleDetail')(db));
 
+// Root URL: sends to dashboard, or /login if they aren't logged in
+app.get('/', (req, res) => {
+    res.redirect('/home');
+});
+
 // Temporary: each remaining page just serves its HTML file until its route file exists
 const pages = {
   '/balances': 'balances.html',
