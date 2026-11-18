@@ -1,7 +1,14 @@
 const {expect} = require('chai');
 const {randomUUID} = require('node:crypto');
-const {db, assertTestDatabase} = require('./helpers/testDb');
+const {db} = require('../index'); // the same database connection index.js uses
 const {createStore} = require('../src/services/calendarStore');
+
+// Checks the database the app is actually connected to, not just an environment variable.
+const assertTestDatabase = () => {
+  if (!/_test$/.test(db.$cn.database || '')) {
+    throw new Error('Refusing to run database tests against a non-test database');
+  }
+};
 
 // Rules PostgreSQL itself enforces for events (src/init_data/create.sql). These hold even if a route
 // or validator is bypassed or has a bug, so bad data cannot get in.

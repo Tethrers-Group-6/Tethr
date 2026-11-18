@@ -18,7 +18,8 @@ calendar, so the money and the plans behind it stay together.
 Tethr/
 ├── MilestoneSubmissions/
 │   ├── Release_Notes.md
-│   └── Team6_Tethr_Project_Proposal.pdf
+│   ├── Team6_Tethr_Project_Proposal.pdf
+│   └── uat-plan.md
 ├── ProjectSourceCode/
 │   ├── .env.test.example
 │   ├── .gitignore
@@ -36,16 +37,20 @@ Tethr/
 │   │   │   │   ├── events.css
 │   │   │   │   └── styles.css
 │   │   │   ├── img/
-│   │   │   │   └── Tethr Logo.png
+│   │   │   │   └── Tethr_Logo.png
 │   │   │   └── js/
 │   │   │       ├── calendar-core.js
+│   │   │       ├── circle.js
 │   │   │       ├── circles.js
 │   │   │       ├── dashboard.js
 │   │   │       ├── events.js
+│   │   │       ├── expenses.js
+│   │   │       ├── login.js
 │   │   │       ├── profile.js
-│   │   │       └── ...
+│   │   │       └── register.js
 │   │   ├── routes/
 │   │   │   ├── balances.js
+│   │   │   ├── circleDetail.js
 │   │   │   ├── circles.js
 │   │   │   ├── dashboard.js
 │   │   │   ├── events.js
@@ -58,6 +63,7 @@ Tethr/
 │   │   │   └── gcal.js
 │   │   ├── views/
 │   │   │   ├── balances.html
+│   │   │   ├── circle.html
 │   │   │   ├── circles.html
 │   │   │   ├── dashboard.html
 │   │   │   ├── events.html
@@ -65,19 +71,26 @@ Tethr/
 │   │   │   ├── login.html
 │   │   │   ├── profile.html
 │   │   │   └── register.html
+│   │   ├── computeSplits.js
+│   │   ├── parseAmount.js
 │   │   ├── validateEvent.js
 │   │   ├── validateInviteCode.js
-│   │   └── validateProfileUpdate.js
+│   │   ├── validateProfileUpdate.js
+│   │   └── validateRegistration.js
 │   └── test/
 │       ├── README.md
+│       ├── circleDetail.spec.js
 │       ├── circles.spec.js
+│       ├── computeSplits.spec.js
 │       ├── events.spec.js
+│       ├── expenses.spec.js
 │       ├── login.spec.js
+│       ├── parseAmount.spec.js
 │       ├── profile.spec.js
 │       ├── profileValidation.spec.js
 │       ├── server.spec.js
+│       ├── validateRegistration.spec.js
 │       ├── validation.spec.js
-│       └── ...
 ├── README.md
 └── TeamMeetingLogs/
     └── MeetingLog.md
