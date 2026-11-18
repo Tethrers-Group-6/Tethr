@@ -44,7 +44,7 @@ CREATE TABLE events (
   title      VARCHAR(150) NOT NULL,
   location   VARCHAR(200),
   starts_at  TIMESTAMP NOT NULL,
-  ends_at    TIMESTAMP NOT NULL,
+  ends_at    TIMESTAMP,
   google_calendar_id VARCHAR(255),
   CONSTRAINT chk_events_dates CHECK (ends_at IS NULL OR ends_at > starts_at),
   CONSTRAINT fk_events_circle FOREIGN KEY (circle_id) REFERENCES circles (circle_id) ON DELETE CASCADE,
