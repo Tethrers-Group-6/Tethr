@@ -23,15 +23,17 @@ Tethr/
 ├── ProjectSourceCode/
 │   ├── .env.test.example
 │   ├── .gitignore
-│   ├── docker-compose.yaml
 │   ├── docker-compose.test.yaml
+│   ├── docker-compose.yaml
 │   ├── index.js
-│   ├── package.json
 │   ├── package-lock.json
+│   ├── package.json
 │   ├── src/
+│   │   ├── computeSplits.js
 │   │   ├── init_data/
 │   │   │   ├── create.sql
 │   │   │   └── insert.sql
+│   │   ├── parseAmount.js
 │   │   ├── resources/
 │   │   │   ├── css/
 │   │   │   │   ├── events.css
@@ -61,6 +63,10 @@ Tethr/
 │   │   ├── services/
 │   │   │   ├── calendarStore.js
 │   │   │   └── gcal.js
+│   │   ├── validateEvent.js
+│   │   ├── validateInviteCode.js
+│   │   ├── validateProfileUpdate.js
+│   │   ├── validateRegistration.js
 │   │   ├── views/
 │   │   │   ├── balances.html
 │   │   │   ├── circle.html
@@ -71,14 +77,13 @@ Tethr/
 │   │   │   ├── login.html
 │   │   │   ├── profile.html
 │   │   │   └── register.html
-│   │   ├── computeSplits.js
-│   │   ├── parseAmount.js
-│   │   ├── validateEvent.js
-│   │   ├── validateInviteCode.js
-│   │   ├── validateProfileUpdate.js
-│   │   └── validateRegistration.js
 │   └── test/
 │       ├── README.md
+│       ├── calendar.api.spec.js
+│       ├── calendar.app.spec.js
+│       ├── calendar.core.spec.js
+│       ├── calendar.gcal.spec.js
+│       ├── calendar.validation.spec.js
 │       ├── circleDetail.spec.js
 │       ├── circles.spec.js
 │       ├── computeSplits.spec.js
