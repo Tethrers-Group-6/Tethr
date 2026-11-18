@@ -12,4 +12,11 @@
 
 
 ## Since 11/5
+* Most have implemented some code for each feature
+    * Calendar access calendar API for calendar features
+    * Profile works using sample user
+    * Dashboard works using sample circles, users, expenses
+    * Circles works using sample users, circles, join codes
+* created all testing files and documentation
+* logo created
 

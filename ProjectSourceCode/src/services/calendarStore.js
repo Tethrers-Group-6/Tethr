@@ -1,12 +1,11 @@
 // All SQL for the calendar. `db` is a pg-promise style object (any/one/oneOrNone/none),
-// so tests can pass a fake
 
 const EVENT_SELECT = `
   SELECT e.event_id AS id, e.circle_id AS "circleId", c.name AS circle, e.title, e.location,
          to_char(e.starts_at, 'YYYY-MM-DD') AS date,
          to_char(e.starts_at, 'HH24:MI') AS "startTime",
          to_char(e.ends_at, 'HH24:MI') AS "endTime",
-         (e.google_event_id IS NOT NULL) AS synced,
+         (e.google_calendar_id IS NOT NULL) AS synced,
          json_build_object(
            'going', COUNT(r.user_id) FILTER (WHERE r.status = 'going'),
            'maybe', COUNT(r.user_id) FILTER (WHERE r.status = 'maybe'),
@@ -55,8 +54,9 @@ function createStore(db) {
         [circleId, userId, title, location, `${date} ${startTime}`, `${date} ${endTime}`]);
     },
 
+    // events.google_calendar_id holds the id of the Google Calendar event this row was copied to.
     setGoogleId(eventId, googleEventId) {
-      return db.none('UPDATE events SET google_event_id = $2 WHERE event_id = $1', [eventId, googleEventId]);
+      return db.none('UPDATE events SET google_calendar_id = $2 WHERE event_id = $1', [eventId, googleEventId]);
     },
 
     // Returns null unless the user belongs to the event's circle.
