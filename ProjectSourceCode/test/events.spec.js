@@ -20,7 +20,7 @@ describe('Events: database rules (PostgreSQL)', () => {
 
   const title = () => `Rules ${run} ${++seq}`;
   const insertEvent = (t, starts, ends, googleId = null, circleId = circle) => db.one(
-    `INSERT INTO events (circle_id, created_by, title, starts_at, ends_at, google_event_id)
+    `INSERT INTO events (circle_id, created_by, title, starts_at, ends_at, google_calendar_id)
      VALUES ($1, $2, $3, $4, $5, $6) RETURNING event_id`,
     [circleId, user, t, starts, ends, googleId]).then((r) => r.event_id);
   const insertExpense = (circleId, eventId) => db.one(
@@ -59,9 +59,9 @@ describe('Events: database rules (PostgreSQL)', () => {
     const t = title();
     const before = await rejects(insertEvent(t, '2031-07-01 20:00', '2031-07-01 19:00'));
     expect(before.code).to.equal('23514');
-    expect(before.constraint).to.equal('chk_events_end_after_start');
+    expect(before.constraint).to.equal('chk_events_dates');
     const equal = await rejects(insertEvent(t, '2031-07-01 20:00', '2031-07-01 20:00'));
-    expect(equal.constraint).to.equal('chk_events_end_after_start');
+    expect(equal.constraint).to.equal('chk_events_dates');
     expect(await n('FROM events WHERE title = $1', [t])).to.equal(0);
   });
 
@@ -72,13 +72,13 @@ describe('Events: database rules (PostgreSQL)', () => {
     expect(event.endTime).to.equal(null);
   });
 
-  it('keeps Google ids unique but allows any number of unsynced events', async () => {
-    const gid = `lab10-${run}-dup`;
-    await insertEvent(title(), '2031-07-03 10:00', '2031-07-03 11:00', gid);
-    const dup = await rejects(insertEvent(title(), '2031-07-03 12:00', '2031-07-03 13:00', gid));
-    expect(dup.code).to.equal('23505');
-    await insertEvent(title(), '2031-07-03 14:00', '2031-07-03 15:00', null);
-    await insertEvent(title(), '2031-07-03 16:00', '2031-07-03 17:00', null);
+  it('counts an event as synced only when it has a Google id', async () => {
+    const store = createStore(db);
+    const synced = await insertEvent(title(), '2031-07-03 10:00', '2031-07-03 11:00', `lab10-${run}-synced`);
+    const unsynced = await insertEvent(title(), '2031-07-03 12:00', '2031-07-03 13:00', null);
+    await insertEvent(title(), '2031-07-03 14:00', '2031-07-03 15:00', null); // any number of unsynced events is fine
+    expect((await store.getEvent(user, synced)).synced).to.equal(true);
+    expect((await store.getEvent(user, unsynced)).synced).to.equal(false);
   });
 
   it('allows only going, maybe or no, and one RSVP per person per event', async () => {
