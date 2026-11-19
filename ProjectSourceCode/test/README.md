@@ -336,3 +336,124 @@ tests-1 exited with code 1
 - Real Google Calendar sync (tests use a fake Google client)
 - Real login (login is another teammate's feature)
 - Editing and deleting events (not implemented yet)
+
+
+
+
+
+dylancarter@Dylans-MacBook-Pro ProjectSourceCode % docker compose run --rm web npx mocha test/computeSplits.spec.js --exit
+[+]  1/1t 1/11
+ ✔ Container projectsourcecode-db-1 Running                        0.0s
+Container projectsourcecode-web-run-bed1c48946f0 Creating 
+Container projectsourcecode-web-run-bed1c48946f0 Created 
+
+
+  computeSplits (unit)
+    ✔ splits evenly when the total divides exactly
+    ✔ gives the leftover cents to the first people (3151 across 4)
+    ✔ always adds up to exactly the total
+    ✔ keeps each person with the matching userId
+    ✔ gives the whole amount to a single participant
+    ✔ rejects a zero, negative, or non-integer total
+    ✔ rejects an empty participant list
+    ✔ rejects duplicate participants
+
+
+  8 passing (3ms)
+
+
+
+
+
+
+
+
+dylancarter@Dylans-MacBook-Pro ProjectSourceCode % docker compose -p tethr-tests -f docker-compose.test.yaml run --rm tests npx mocha test/parseAmount.spec.js test/computeSplits.spec.js test/expenses.spec.js --exit
+[+]  1/1t 1/1
+ ✔ Container tethr-tests-db-test-1 Started                         0.1s
+Container tethr-tests-db-test-1 Waiting 
+Container tethr-tests-db-test-1 Healthy 
+Container tethr-tests-tests-run-0dcf4bd07765 Creating 
+Container tethr-tests-tests-run-0dcf4bd07765 Created 
+
+
+  parseAmountToCents (unit)
+    ✔ converts dollars and cents to integer cents
+    ✔ avoids floating-point error (1.15 * 100 is 114.99999999999999)
+    ✔ trims whitespace and accepts a number
+    ✔ returns null for zero, negative, or non-numeric input
+    ✔ returns null for more than 2 decimal places
+
+  computeSplits (unit)
+    ✔ splits evenly when the total divides exactly
+    ✔ gives the leftover cents to the first people (3151 across 4)
+    ✔ always adds up to exactly the total
+    ✔ keeps each person with the matching userId
+    ✔ gives the whole amount to a single participant
+    ✔ rejects a zero, negative, or non-integer total
+    ✔ rejects an empty participant list
+    ✔ rejects duplicate participants
+
+  POST /api/expenses (integration)
+    ✔ creates the expense and splits it, including the payer (positive case)
+    ✔ records the logged-in user as the payer, not someone the client names
+    ✔ does not double-count the payer if they list themselves
+    ✔ rejects a participant who is not in the circle with 400 and saves nothing
+    ✔ rejects a user who is not in the circle with 403
+    ✔ rejects bad input with 400 (amount, name, participants, circle)
+    ✔ rejects a logged-out visitor with 401
+
+
+  20 passing (72ms)
+
+
+
+
+
+
+  dylancarter@Dylans-MacBook-Pro ProjectSourceCode % docker compose -p tethr-tests -f docker-compose.test.yaml run --rm tests npx mocha test/circleDetail.spec.js --exit
+[+]  1/1t 1/11
+ ✔ Container tethr-tests-db-test-1 Running                         0.0s
+Container tethr-tests-db-test-1 Waiting 
+Container tethr-tests-db-test-1 Healthy 
+Container tethr-tests-tests-run-e510115ca695 Creating 
+Container tethr-tests-tests-run-e510115ca695 Created 
+
+
+  GET /api/circles/:id (integration)
+    ✔ returns the circle, its members, and its expenses for a member (positive case)
+    ✔ reports your share as null when you were not part of the expense
+    ✔ returns 404 to a user who is not in the circle
+    ✔ returns 404 for a circle that does not exist
+    ✔ returns 400 for an id that is not a number
+    ✔ rejects a logged-out visitor with 401
+
+
+  6 passing (44ms)
+
+
+
+
+
+dylancarter@Dylans-MacBook-Pro ProjectSourceCode % docker compose -p tethr-tests -f docker-compose.test.yaml run --rm tests npx mocha test/circleDetail.spec.js --exit
+[+]  1/1t 1/11
+ ✔ Container tethr-tests-db-test-1 Running                         0.0s
+Container tethr-tests-db-test-1 Waiting 
+Container tethr-tests-db-test-1 Healthy 
+Container tethr-tests-tests-run-504338a526b4 Creating 
+Container tethr-tests-tests-run-504338a526b4 Created 
+
+
+  GET /api/circles/:id (integration)
+    ✔ returns the circle, its members, and its expenses for a member (positive case)
+    ✔ reports your share as null when you were not part of the expense
+    ✔ returns 404 to a user who is not in the circle
+    ✔ returns 404 for a circle that does not exist
+    ✔ returns 400 for an id that is not a number
+    ✔ rejects a logged-out visitor with 401
+    the page GET /circles/:id
+      ✔ serves the HTML page to a logged-in user
+      ✔ redirects a logged-out visitor to /login
+
+
+  8 passing (45ms)
