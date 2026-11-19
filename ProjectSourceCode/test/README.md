@@ -336,3 +336,28 @@ tests-1 exited with code 1
 - Real Google Calendar sync (tests use a fake Google client)
 - Real login (login is another teammate's feature)
 - Editing and deleting events (not implemented yet)
+
+# Testing: Balances
+
+Runs with the same commands as above (all `test/*.spec.js` files run together).
+
+## Route contract
+| Route | Request | Success | Failure cases |
+|---|---|---|---|
+| GET /balances | logged in | 200, the balances page (HTML) | 302 redirect to /login when logged out |
+| GET /api/balances | logged in | 200, { me, totals: { oweCents, owedCents }, people: [{ id, name, venmoUsername, netCents, circles: [{ id, name, netCents }] }], pending: { incoming, outgoing }, history } | 401 not logged in |
+| POST /api/payments | JSON { circle_id, user_id, amount } (I paid user_id) | 201, { message: "Payment recorded", payment } saved as "pending" until the receiver confirms | 400 bad input, paying yourself, or more than owed; 401; 404 circle not found / person not in it; 409 nothing owed or already covered by a pending payment |
+| POST /api/payments/received | JSON { circle_id, user_id, amount } (user_id paid me) | 201, { message: "Payment confirmed", payment } saved as "confirmed" right away | same as above |
+| POST /api/payments/:id/confirm | logged in as the receiver | 200, payment becomes "confirmed" | 400 bad id; 401; 403 you are the sender; 404 not your payment; 409 already confirmed |
+| DELETE /api/payments/:id | logged in as sender (cancel) or receiver (decline) | 200, pending payment removed | 400 bad id; 401; 404 not your payment; 409 confirmed payments cannot be removed |
+
+Balances use the same math as the dashboard (expenses + confirmed payments), so the two pages always show the same totals. Pending payments do not change balances until the receiver confirms them.
+
+## What is tested
+- Unit (test/balancesLogic.spec.js, 11 tests): summarizeBalances, validatePayment and the Venmo link builder. No HTTP or database.
+- Integration (test/balances.spec.js, 21 tests): HTTP -> Express router -> real PostgreSQL. Covers both sides of a debt, outsiders seeing nothing, overpaying, double-paying, confirming, declining, canceling, and that failed requests save nothing.
+- Login is stubbed the same way as the Circles tests.
+
+## Cleanup and repeatability
+- Each run creates four users and one circle with a random tag. afterEach deletes that circle's payments; after() deletes only the rows the file created.
+- Passed twice in a row.
