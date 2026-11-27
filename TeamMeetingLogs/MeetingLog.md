@@ -19,3 +19,6 @@
 ### 11-12 Meeting: Lab 11
 - Demoed the working pages with sample data
 - Want to have actual data soon to make sure database connection works
+### 11-19 Meeting: Lab 12
+- Demoed pages with data from the database and tested functionality of creating an event/expense
+- Started hosting it on Render, will have it fully working by the Tuesday after break
